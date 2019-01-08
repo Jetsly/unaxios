@@ -1,0 +1,36 @@
+{
+  "name": "unaxios",
+  "version": "0.1.1",
+  "source": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/unaxios.es.js",
+  "umd:main": "dist/unaxios.umd.js",
+  "repository": "git@github.com:Jetsly/unaxios.git",
+  "author": "Jetsly <cnljli@live.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf ./dist && rollup -c && tsc -p ./",
+    "test": "jest"
+  },
+  "keywords": [
+    "unaxios",
+    "axios",
+    "fetch"
+  ],
+  "dependencies": {
+    "tslib": "^1.9.3",
+    "unfetch": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.12",
+    "@types/node": "^10.12.18",
+    "fetch-mock": "^7.3.0",
+    "jest": "^23.6.0",
+    "node-fetch": "^2.3.0",
+    "rollup": "^1.0.2",
+    "rollup-plugin-typescript": "^1.0.0",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.2.2"
+  }
+}
