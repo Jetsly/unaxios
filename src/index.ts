@@ -15,9 +15,19 @@ const buildParam = (prefix, param) => {
 };
 const buildGetParam = query => `?${buildParam('', query).join('&')}`;
 
-let requestHandle: Array<{ fulfilled: handle; rejected: handle }> = [];
-let responseHandle: Array<{ fulfilled: handle; rejected: handle }> = [];
+let requestHandle: Array<{ fulfilled?: handle; rejected?: handle }> = [];
+let responseHandle: Array<{ fulfilled?: handle; rejected?: handle }> = [];
 export type handle<T = any> = (config: T) => Promise<T>;
+export interface IRequest {
+  url?: string;
+  method?: string;
+  contentType?: string;
+  headers?: { [key: string]: string };
+  params?: { [key: string]: any };
+  data?: any;
+  withCredentials?: boolean;
+}
+export interface IRespone {}
 export const defaults = {
   baseURL: '',
   timeOut: Infinity,
@@ -29,9 +39,12 @@ export const interceptors = {
         fulfilled,
         rejected,
       });
-    },
-    clear() {
-      requestHandle = [];
+      const id = requestHandle.length - 1;
+      return {
+        dispose() {
+          requestHandle[id] = {};
+        },
+      };
     },
   },
   response: {
@@ -40,23 +53,30 @@ export const interceptors = {
         fulfilled,
         rejected,
       });
-    },
-    clear() {
-      responseHandle = [];
+      const id = responseHandle.length - 1;
+      return {
+        dispose() {
+          responseHandle[id] = {};
+        },
+      };
     },
   },
 };
-const request = ({ url, method, headers, data: body, credentials = false }) =>
+const request = ({ url, method, headers, data: body, withCredentials = false }) =>
   Promise.race([
     fetch(`${defaults.baseURL}${url}`, {
       method,
       headers,
       body,
-      ...(credentials ? { credentials: 'include' } : {}),
+      ...(withCredentials ? { credentials: 'include' } : {}),
     }),
     new Promise((_, reject) => setTimeout(() => reject({ isTimeOut: true }), defaults.timeOut)),
   ]);
-function http(options = {}) {
+/**
+ *
+ * @param options
+ */
+function http(options: IRequest = {}) {
   const chain: handle[][] = [[request, undefined]];
   requestHandle.forEach(({ fulfilled, rejected }) => {
     chain.unshift([fulfilled, rejected]);
@@ -97,14 +117,28 @@ interceptors.response.use(res =>
 );
 
 export default http;
-export function get(url, params = {}, options = {}) {
+
+/**
+ *
+ * @param url
+ * @param params
+ * @param options
+ */
+export function get(url: string, params: { [key: string]: any } = {}, options: IRequest = {}) {
   return http({
     url,
     params,
     ...options,
   });
 }
-export function post(url, data = {}, options = {}) {
+
+/**
+ *
+ * @param url
+ * @param data
+ * @param options
+ */
+export function post(url: string, data = {}, options: IRequest = {}) {
   return http({
     method: 'POST',
     contentType: 'application/json',

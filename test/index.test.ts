@@ -8,9 +8,9 @@ describe('ajax', () => {
     fetchMock.get(`begin:${distUrl}`, url => ({
       url,
     }));
-    const mapUrl = [
+    const mapUrl: Array<[{ [key: string]: any }, string]> = [
       [undefined, ''],
-      [1, ''],
+      [1 as any, ''],
       [{ a: 1 }, '?a=1'],
       [{ a: 1, '&': '1' }, '?a=1&%26=1'],
       [{ a: 1, b: 1 }, '?a=1&b=1'],
@@ -64,19 +64,22 @@ describe('interceptors', () => {
     const url = '/defaults_request';
     const distUrl = `${defaults.baseURL}${url}`;
     fetchMock.post(distUrl, (url, { method }) => ({ method }));
-    interceptors.request.use(config => ({
+    fetchMock.get(distUrl, (url, { method }) => ({ method }));
+    const disposable = interceptors.request.use(config => ({
       ...config,
       method: 'post',
     }));
-    const { data } = await http({ url });
-    expect(data.method).toBe('post');
+    expect((await http({ url })).data.method).toMatch(/post/i);
+    disposable.dispose();
+    expect((await http({ url })).data.method).toMatch(/get/i);
   });
   test('response', async () => {
-    interceptors.response.use(res => res.data);
+    const disposable = interceptors.response.use(res => res.data);
     const url = '/defaults_response';
     const distUrl = `${defaults.baseURL}${url}`;
     fetchMock.post(distUrl, { url: distUrl });
-    const data = await post(url);
-    expect(data.url).toBe(distUrl);
+    expect((await post(url)).url).toBe(distUrl);
+    disposable.dispose();
+    expect((await post(url)).data.url).toBe(distUrl);
   });
 });
