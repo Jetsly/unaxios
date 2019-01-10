@@ -17,6 +17,7 @@ describe('ajax', () => {
       [{ a: 1, b: [1, 2] }, '?a=1&b%5B%5D=1&b%5B%5D=2'],
       [{ a: { b: 1 } }, '?a%5Bb%5D=1'],
     ];
+    expect((await get(url)).data.url).toBe(`${distUrl}`);
     for (let index = 0; index < mapUrl.length; index++) {
       const [params, query] = mapUrl[index];
       expect((await get(url, params)).data.url).toBe(`${distUrl}${query}`);

@@ -64,18 +64,25 @@ export const interceptors = {
   },
 };
 const request = ({ url, method, headers, data: body, withCredentials = false }) =>
-  Promise.race([
-    fetch(`${defaults.baseURL}${url}`, {
-      method,
-      headers: {
-        ...defaults.headers,
-        ...headers,
-      },
-      body,
-      ...(withCredentials ? { credentials: 'include' } : {}),
-    }),
-    new Promise((_, reject) => setTimeout(() => reject({ isTimeOut: true }), defaults.timeOut)),
-  ]);
+  Promise.race(
+    [
+      fetch(`${defaults.baseURL}${url}`, {
+        method,
+        headers: {
+          ...defaults.headers,
+          ...headers,
+        },
+        body,
+        ...(withCredentials ? { credentials: 'include' } : {}),
+      }),
+    ].concat(
+      defaults.timeOut === Infinity
+        ? []
+        : new Promise<any>((_, reject) =>
+            setTimeout(() => reject({ isTimeOut: true }), defaults.timeOut)
+          )
+    )
+  );
 /**
  *
  * @param options

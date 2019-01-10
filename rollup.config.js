@@ -7,34 +7,38 @@ const output = {
   exports: 'named',
   banner: `/* ${name} version ${version} */`,
 };
-const plugins = [
-  tsPlugin,
-  terser({
-    output: {
-      comments: function(node, comment) {
-        var text = comment.value;
-        return /unaxios/i.test(text);
-      },
-    },
-  }),
-];
+const plugins = compress =>
+  [tsPlugin].concat(
+    compress
+      ? [
+          terser({
+            output: {
+              comments: function(node, comment) {
+                var text = comment.value;
+                return /unaxios/i.test(text);
+              },
+            },
+          }),
+        ]
+      : []
+  );
 export default [
   {
     input,
-    plugins,
+    plugins: plugins(true),
     output: Object.assign({}, output, {
       name: 'unaxios',
       file: 'dist/unaxios.umd.js',
       format: 'umd',
     }),
   },
-  {
-    input,
-    plugins,
-    external: ['unfetch/polyfill'],
-    output: Object.assign({}, output, {
-      file: 'dist/unaxios.es.js',
-      format: 'esm',
-    }),
-  },
+  // {
+  //   input,
+  //   plugins: plugins(false),
+  //   external: ['unfetch/polyfill'],
+  //   output: Object.assign({}, output, {
+  //     file: 'dist/unaxios.es.js',
+  //     format: 'esm',
+  //   }),
+  // },
 ];
