@@ -31,6 +31,7 @@ export interface IRespone {}
 export const defaults = {
   baseURL: '',
   timeOut: Infinity,
+  headers: {},
 };
 export const interceptors = {
   request: {
@@ -66,7 +67,10 @@ const request = ({ url, method, headers, data: body, withCredentials = false }) 
   Promise.race([
     fetch(`${defaults.baseURL}${url}`, {
       method,
-      headers,
+      headers: {
+        ...defaults.headers,
+        ...headers,
+      },
       body,
       ...(withCredentials ? { credentials: 'include' } : {}),
     }),

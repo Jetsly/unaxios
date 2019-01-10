@@ -1,6 +1,6 @@
 {
   "name": "unaxios",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "source": "src/index.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,6 +29,7 @@
     "jest": "^23.6.0",
     "node-fetch": "^2.3.0",
     "rollup": "^1.0.2",
+    "rollup-plugin-terser": "^4.0.2",
     "rollup-plugin-typescript": "^1.0.0",
     "ts-jest": "^23.10.5",
     "typescript": "^3.2.2"

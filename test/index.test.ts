@@ -53,9 +53,20 @@ describe('defaults', () => {
     const { isTimeOut } = await http({ url }).catch(a => a);
     expect(isTimeOut).toBe(true);
   });
+
+  test('defaults headers', async () => {
+    defaults.headers = { hello: 'world' };
+    const url = '/defaults_headers';
+    const distUrl = `${defaults.baseURL}${url}`;
+    fetchMock.once(distUrl, (url, { headers: { hello } }) => ({ hello }));
+    const { data } = await http({ url });
+    expect(data.hello).toBe(defaults.headers['hello']);
+  });
+
   afterAll(() => {
     defaults.baseURL = '';
     defaults.timeOut = Infinity;
+    defaults.headers = {};
   });
 });
 

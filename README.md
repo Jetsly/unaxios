@@ -119,6 +119,8 @@ You can specify config defaults that will be applied to every request.
 ```js
 import { defaults } from 'unaxios';
 defaults.baseURL = 'https://api.example.com';
+defaults.timeOut = Infinity;
+defaults.headers = {};
 ```
 
 ## Interceptors
