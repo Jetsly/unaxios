@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.npmjs.org/package/unaxios"><img src="https://img.shields.io/npm/v/unaxios.svg?style=flat" alt="npm"></a>
-  <a href="https://unpkg.com/unaxios/dist"><img src="https://img.badgesize.io/https://unpkg.com/unaxios/dist/index.js?compression=gzip" alt="gzip size"></a>
+  <a href="https://unpkg.com/unaxios/dist"><img src="https://img.badgesize.io/https://unpkg.com/unaxios/dist/unaxios.umd.js?compression=gzip" alt="gzip size"></a>
   <a href="https://www.npmjs.com/package/unaxios"><img src="https://img.shields.io/npm/dt/unaxios.svg" alt="downloads" ></a>
   <a href="https://travis-ci.org/Jetsly/unaxios"><img src="https://travis-ci.org/Jetsly/unaxios.svg?branch=master" alt="travis"></a>
 </p>
