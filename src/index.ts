@@ -7,7 +7,7 @@ const buildParam = (prefix, param) => {
     return Object.keys(param).reduce((query, key) => {
       let val = param[`${key}`];
       let _key = isObj(val) || isArray(val) || isObj(param) ? key : ``;
-      return [...query, ...buildParam(prefix === '' ? key : `${prefix}[${_key}]`, val)];
+      return query.concat(buildParam(prefix === '' ? key : `${prefix}[${_key}]`, val));
     }, []);
   } else {
     return [`${encodeURIComponent(`${prefix}`)}=${encodeURIComponent(param)}`];
@@ -17,6 +17,20 @@ const buildGetParam = query => `?${buildParam('', query).join('&')}`;
 
 let requestHandle: Array<{ fulfilled?: handle; rejected?: handle }> = [];
 let responseHandle: Array<{ fulfilled?: handle; rejected?: handle }> = [];
+let injectHandle = handle => ({
+  use(fulfilled, rejected?) {
+    const id =
+      handle.push({
+        fulfilled,
+        rejected,
+      }) - 1;
+    return {
+      dispose() {
+        handle[id] = {};
+      },
+    };
+  },
+});
 export type handle<T = any> = (config: T) => Promise<T>;
 export interface IRequest {
   url?: string;
@@ -27,66 +41,49 @@ export interface IRequest {
   data?: any;
   withCredentials?: boolean;
 }
-export interface IRespone {}
-export const defaults = {
+export interface IRespone {
+  data: any;
+  status: number;
+  statusText: string;
+  headers: Headers;
+}
+export const defaults: {
+  baseURL: string;
+  timeOut: number;
+  headers: { [key: string]: string };
+} = {
   baseURL: '',
   timeOut: Infinity,
   headers: {},
 };
 export const interceptors = {
-  request: {
-    use(fulfilled, rejected?) {
-      requestHandle.push({
-        fulfilled,
-        rejected,
-      });
-      const id = requestHandle.length - 1;
-      return {
-        dispose() {
-          requestHandle[id] = {};
-        },
-      };
-    },
-  },
-  response: {
-    use(fulfilled, rejected?) {
-      responseHandle.push({
-        fulfilled,
-        rejected,
-      });
-      const id = responseHandle.length - 1;
-      return {
-        dispose() {
-          responseHandle[id] = {};
-        },
-      };
-    },
-  },
+  request: injectHandle(requestHandle),
+  response: injectHandle(responseHandle),
 };
-const request = ({ url, method, headers, data: body, withCredentials = false }) =>
-  Promise.race(
-    [
-      fetch(`${defaults.baseURL}${url}`, {
-        method,
-        headers: {
-          ...defaults.headers,
-          ...headers,
-        },
-        body,
-        ...(withCredentials ? { credentials: 'include' } : {}),
-      }),
-    ].concat(
-      defaults.timeOut === Infinity
-        ? []
-        : new Promise<any>((_, reject) =>
-            setTimeout(() => reject({ isTimeOut: true }), defaults.timeOut)
-          )
-    )
-  );
-/**
- *
- * @param options
- */
+const request = options => {
+  const { url, method, headers, data: body, withCredentials = false } = options;
+  const init: RequestInit = {
+    method,
+    body,
+    headers: Object.keys(headers).reduce(
+      (preHeaders, key) => ((preHeaders.key = headers[key]), preHeaders),
+      defaults.headers
+    ),
+  };
+  if (withCredentials) {
+    init.credentials = 'include';
+  }
+  const fetchPromise = [fetch(`${defaults.baseURL}${url}`, init)];
+  if (defaults.timeOut !== Infinity) {
+    fetchPromise.push(
+      new Promise<any>((_, reject) =>
+        setTimeout(() => reject({ isTimeOut: true }), defaults.timeOut)
+      )
+    );
+  }
+  return Promise.race(fetchPromise);
+};
+
 function http(options: IRequest = {}) {
   const chain: handle[][] = [[request, undefined]];
   requestHandle.forEach(({ fulfilled, rejected }) => {
@@ -95,18 +92,16 @@ function http(options: IRequest = {}) {
   responseHandle.forEach(({ fulfilled, rejected }) => {
     chain.push([fulfilled, rejected]);
   });
-  return chain.reduce(
-    (promise, [fulfilled, rejected]) => promise.then(fulfilled, rejected),
-    Promise.resolve({
-      method: 'GET',
-      headers: {},
-      ...options,
-    })
+  return chain.reduce<Promise<IRespone>>(
+    (promise, [fulfilled, rejected]) => Promise.resolve(promise).then(fulfilled, rejected),
+    ((options.method = options.method || 'GET'),
+    (options.headers = options.headers || {}),
+    options) as any
   );
 }
 
 interceptors.request.use(conf => {
-  if (conf.params && isObj(conf.params)) {
+  if (isObj(conf.params)) {
     conf.url = [conf.url, buildGetParam(conf.params)].join('');
   }
   if (isJson(conf.contentType) && conf.data) {
@@ -120,41 +115,24 @@ interceptors.request.use(conf => {
 
 interceptors.response.use(res =>
   isJson(res.headers.get('content-type'))
-    ? res.json().then(data => ({
-        ...res,
-        data,
-      }))
+    ? res.json().then(data => ((res.data = data || res.data), res))
     : res
 );
 
 export default http;
 
-/**
- *
- * @param url
- * @param params
- * @param options
- */
 export function get(url: string, params: { [key: string]: any } = {}, options: IRequest = {}) {
-  return http({
-    url,
-    params,
-    ...options,
-  });
+  return http(
+    ((options.url = url || options.url), (options.params = params || options.params), options)
+  );
 }
 
-/**
- *
- * @param url
- * @param data
- * @param options
- */
 export function post(url: string, data = {}, options: IRequest = {}) {
-  return http({
-    method: 'POST',
-    contentType: 'application/json',
-    url,
-    data,
-    ...options,
-  });
+  return http(
+    ((options.method = 'POST' || options.method),
+    (options.contentType = 'application/json' || options.contentType),
+    (options.url = url || options.url),
+    (options.data = data || options.data),
+    options)
+  );
 }

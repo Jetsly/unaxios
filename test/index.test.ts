@@ -90,7 +90,7 @@ describe('interceptors', () => {
     const url = '/defaults_response';
     const distUrl = `${defaults.baseURL}${url}`;
     fetchMock.post(distUrl, { url: distUrl });
-    expect((await post(url)).url).toBe(distUrl);
+    expect(((await post(url)) as any).url).toBe(distUrl);
     disposable.dispose();
     expect((await post(url)).data.url).toBe(distUrl);
   });

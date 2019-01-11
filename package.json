@@ -22,7 +22,6 @@
     "promise"
   ],
   "dependencies": {
-    "tslib": "^1.9.3",
     "unfetch": "^4.0.1"
   },
   "devDependencies": {

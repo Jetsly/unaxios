@@ -32,13 +32,14 @@ export default [
       format: 'umd',
     }),
   },
-  // {
-  //   input,
-  //   plugins: plugins(false),
-  //   external: ['unfetch/polyfill'],
-  //   output: Object.assign({}, output, {
-  //     file: 'dist/unaxios.es.js',
-  //     format: 'esm',
-  //   }),
-  // },
+  {
+    input,
+    plugins: plugins(false),
+    external: ['unfetch/polyfill'],
+    output: Object.assign({}, output, {
+      name: 'unaxios',
+      file: 'dist/unaxios.es.js',
+      format: 'esm',
+    }),
+  },
 ];
