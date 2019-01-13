@@ -85,7 +85,7 @@ const request = options => {
 };
 
 function http(options: IRequest = {}) {
-  const chain: handle[][] = [[request, undefined]];
+  const chain: handle[][] = [[request]];
   requestHandle.forEach(({ fulfilled, rejected }) => {
     chain.unshift([fulfilled, rejected]);
   });
