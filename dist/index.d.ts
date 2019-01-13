@@ -4,7 +4,7 @@ export interface IRequest {
     url?: string;
     method?: string;
     contentType?: string;
-    timeout?: number;
+    timeOut?: number;
     headers?: {
         [key: string]: string;
     };
@@ -23,7 +23,7 @@ export interface IRespone {
 }
 export declare const defaults: {
     baseURL: string;
-    timeOut: number;
+    timeout: number;
     headers: {
         [key: string]: string;
     };

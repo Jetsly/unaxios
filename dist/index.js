@@ -34,7 +34,7 @@ var injectHandle = function (handle) { return ({
 }); };
 exports.defaults = {
     baseURL: '',
-    timeOut: Infinity,
+    timeout: Infinity,
     headers: {},
 };
 exports.interceptors = {
@@ -55,9 +55,9 @@ var request = function (config) {
     var fetchPromise = [
         fetch("" + exports.defaults.baseURL + config.url, init).then(function (respone) { return ((respone['config'] = config), respone); }),
     ];
-    var timeOut = havTimeOut(config.timeOut) ? config.timeOut : exports.defaults.timeOut;
-    if (havTimeOut(timeOut)) {
-        fetchPromise.push(new Promise(function (_, reject) { return setTimeout(function () { return reject({ isTimeOut: true }); }, timeOut); }));
+    var timeout = havTimeOut(config.timeout) ? config.timeout : exports.defaults.timeout;
+    if (havTimeOut(timeout)) {
+        fetchPromise.push(new Promise(function (_, reject) { return setTimeout(function () { return reject({ isTimeout: true }); }, timeout); }));
     }
     return Promise.race(fetchPromise);
 };

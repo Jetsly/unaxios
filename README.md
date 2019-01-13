@@ -94,7 +94,7 @@ post(url[, data[, config]])
 
    // `timeout` specifies the number of milliseconds before the request times out.
   // If the request takes longer than `timeout`, the request will be aborted.
-  timeout: 0, // default is Global defaults.timeOut
+  timeout: 0, // default is Global defaults.timeout
 
   // `withCredentials` indicates whether or not cross-site Access-Control requests
   // should be made using credentials
@@ -133,7 +133,7 @@ You can specify config defaults that will be applied to every request.
 ```js
 import { defaults } from 'unaxios';
 defaults.baseURL = 'https://api.example.com';
-defaults.timeOut = Infinity;
+defaults.timeout = Infinity;
 defaults.headers = {};
 ```
 

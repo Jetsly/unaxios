@@ -36,7 +36,7 @@ export interface IRequest {
   url?: string;
   method?: string;
   contentType?: string;
-  timeout?: number;
+  timeOut?: number;
   headers?: { [key: string]: string };
   params?: { [key: string]: any };
   data?: any;
@@ -51,11 +51,11 @@ export interface IRespone {
 }
 export const defaults: {
   baseURL: string;
-  timeOut: number;
+  timeout: number;
   headers: { [key: string]: string };
 } = {
   baseURL: '',
-  timeOut: Infinity,
+  timeout: Infinity,
   headers: {},
 };
 export const interceptors = {
@@ -81,10 +81,10 @@ const request = config => {
       respone => ((respone['config'] = config), respone)
     ),
   ];
-  const timeOut = havTimeOut(config.timeOut) ? config.timeOut : defaults.timeOut;
-  if (havTimeOut(timeOut)) {
+  const timeout = havTimeOut(config.timeout) ? config.timeout : defaults.timeout;
+  if (havTimeOut(timeout)) {
     fetchPromise.push(
-      new Promise<any>((_, reject) => setTimeout(() => reject({ isTimeOut: true }), timeOut))
+      new Promise<any>((_, reject) => setTimeout(() => reject({ isTimeout: true }), timeout))
     );
   }
   return Promise.race(fetchPromise);

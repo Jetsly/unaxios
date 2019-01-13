@@ -47,12 +47,12 @@ describe('defaults', () => {
   });
 
   test('defaults timeout', async () => {
-    defaults.timeOut = 1000;
+    defaults.timeout = 1000;
     const url = '/defaults_timeout';
     const distUrl = `${defaults.baseURL}${url}`;
     fetchMock.once(distUrl, new Promise(res => setTimeout(res, 2000, 404)));
-    const { isTimeOut } = await http({ url }).catch(a => a);
-    expect(isTimeOut).toBe(true);
+    const { isTimeout } = await http({ url }).catch(a => a);
+    expect(isTimeout).toBe(true);
   });
 
   test('defaults headers', async () => {
@@ -66,7 +66,7 @@ describe('defaults', () => {
 
   afterAll(() => {
     defaults.baseURL = '';
-    defaults.timeOut = Infinity;
+    defaults.timeout = Infinity;
     defaults.headers = {};
   });
 });

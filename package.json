@@ -1,6 +1,6 @@
 {
   "name": "unaxios",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "a tiny library contain basic functions of axios",
   "source": "src/index.js",
   "main": "dist/index.js",
