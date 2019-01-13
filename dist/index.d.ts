@@ -4,6 +4,7 @@ export interface IRequest {
     url?: string;
     method?: string;
     contentType?: string;
+    timeout?: number;
     headers?: {
         [key: string]: string;
     };
@@ -18,6 +19,7 @@ export interface IRespone {
     status: number;
     statusText: string;
     headers: Headers;
+    config: IRequest;
 }
 export declare const defaults: {
     baseURL: string;

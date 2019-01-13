@@ -1,4 +1,4 @@
-/* unaxios version 0.1.3 */
+/* unaxios version 0.1.4 */
 import 'unfetch/polyfill';
 
 var isJson = function (contentType) { return contentType && contentType.indexOf('application/json') > -1; };
@@ -41,27 +41,29 @@ var interceptors = {
     request: injectHandle(requestHandle),
     response: injectHandle(responseHandle),
 };
-var request = function (options) {
-    var url = options.url, method = options.method, headers = options.headers, body = options.data, _a = options.withCredentials, withCredentials = _a === void 0 ? false : _a;
+var havTimeOut = function (time) { return time !== Infinity && time !== 0; };
+var request = function (config) {
+    var method = config.method, headers = config.headers;
     var init = {
         method: method,
-        body: body,
+        body: config.data,
         headers: Object.keys(headers).reduce(function (preHeaders, key) { return ((preHeaders.key = headers[key]), preHeaders); }, defaults.headers),
     };
-    if (withCredentials) {
+    if (config.withCredentials) {
         init.credentials = 'include';
     }
-    var fetchPromise = [fetch("" + defaults.baseURL + url, init)];
-    if (defaults.timeOut !== Infinity) {
-        fetchPromise.push(new Promise(function (_, reject) {
-            return setTimeout(function () { return reject({ isTimeOut: true }); }, defaults.timeOut);
-        }));
+    var fetchPromise = [
+        fetch("" + defaults.baseURL + config.url, init).then(function (respone) { return ((respone['config'] = config), respone); }),
+    ];
+    var timeOut = havTimeOut(config.timeOut) ? config.timeOut : defaults.timeOut;
+    if (havTimeOut(timeOut)) {
+        fetchPromise.push(new Promise(function (_, reject) { return setTimeout(function () { return reject({ isTimeOut: true }); }, timeOut); }));
     }
     return Promise.race(fetchPromise);
 };
 function http(options) {
     if (options === void 0) { options = {}; }
-    var chain = [[request, undefined]];
+    var chain = [[request]];
     requestHandle.forEach(function (_a) {
         var fulfilled = _a.fulfilled, rejected = _a.rejected;
         chain.unshift([fulfilled, rejected]);
