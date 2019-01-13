@@ -36,6 +36,7 @@ export interface IRequest {
   url?: string;
   method?: string;
   contentType?: string;
+  timeout?: number;
   headers?: { [key: string]: string };
   params?: { [key: string]: any };
   data?: any;
@@ -46,6 +47,7 @@ export interface IRespone {
   status: number;
   statusText: string;
   headers: Headers;
+  config: IRequest;
 }
 export const defaults: {
   baseURL: string;
@@ -60,25 +62,29 @@ export const interceptors = {
   request: injectHandle(requestHandle),
   response: injectHandle(responseHandle),
 };
-const request = options => {
-  const { url, method, headers, data: body, withCredentials = false } = options;
+const havTimeOut = time => time !== Infinity && time !== 0;
+const request = config => {
+  const { method, headers } = config;
   const init: RequestInit = {
     method,
-    body,
+    body: config.data,
     headers: Object.keys(headers).reduce(
       (preHeaders, key) => ((preHeaders.key = headers[key]), preHeaders),
       defaults.headers
     ),
   };
-  if (withCredentials) {
+  if (config.withCredentials) {
     init.credentials = 'include';
   }
-  const fetchPromise = [fetch(`${defaults.baseURL}${url}`, init)];
-  if (defaults.timeOut !== Infinity) {
+  const fetchPromise = [
+    fetch(`${defaults.baseURL}${config.url}`, init).then(
+      respone => ((respone['config'] = config), respone)
+    ),
+  ];
+  const timeOut = havTimeOut(config.timeOut) ? config.timeOut : defaults.timeOut;
+  if (havTimeOut(timeOut)) {
     fetchPromise.push(
-      new Promise<any>((_, reject) =>
-        setTimeout(() => reject({ isTimeOut: true }), defaults.timeOut)
-      )
+      new Promise<any>((_, reject) => setTimeout(() => reject({ isTimeOut: true }), timeOut))
     );
   }
   return Promise.race(fetchPromise);

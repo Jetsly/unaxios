@@ -7,7 +7,7 @@
 
 # unaxios
 
-> Tiny axios functional
+> a tiny library contain basic functions of axios
 
 - Inspire by [axios](https://github.com/axios/axios)
 
@@ -57,6 +57,7 @@ http(config).then(function(response) {
   console.log(response.status);
   console.log(response.statusText);
   console.log(response.headers);
+  console.log(response.config);
 });
 
 get(url[, params[, config]])
@@ -69,22 +70,32 @@ post(url[, data[, config]])
 {
   // `url` is the server URL that will be used for the request
   url:'/url'
+
   // `method` is the request method to be used when making the request
   method: 'get', // default
+
   // `headers` are custom headers to be sent
   headers: {'X-Requested-With': 'XMLHttpRequest'},
+
   // `params` are the URL parameters to be sent with the request
   // Must be a plain object
   params: {
     firstName: 'ddot'
   },
+
   // `data` is the data to be sent as the request body
   // Only applicable for request methods 'PUT', 'POST', and 'PATCH'
   data: {
     firstName: 'ddot'
   },
+
   // contentType headers to be sent
   contentType: '' ,// when post method default application/json
+
+   // `timeout` specifies the number of milliseconds before the request times out.
+  // If the request takes longer than `timeout`, the request will be aborted.
+  timeout: 0, // default is Global defaults.timeOut
+
   // `withCredentials` indicates whether or not cross-site Access-Control requests
   // should be made using credentials
   withCredentials: false, // default
@@ -107,6 +118,9 @@ post(url[, data[, config]])
   // `headers` the headers that the server responded with
   // All header names are lower cased
   headers: {},
+
+  // `config` is the config that was provided to `axios` for the request
+  config: {},
 }
 ```
 
