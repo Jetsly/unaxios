@@ -47,7 +47,7 @@ var request = function (config) {
     var init = {
         method: method,
         body: config.data,
-        headers: Object.keys(headers).reduce(function (preHeaders, key) { return ((preHeaders.key = headers[key]), preHeaders); }, exports.defaults.headers),
+        headers: Object.keys(headers).reduce(function (preHeaders, key) { return ((preHeaders[key] = headers[key]), preHeaders); }, exports.defaults.headers),
     };
     if (config.withCredentials) {
         init.credentials = 'include';

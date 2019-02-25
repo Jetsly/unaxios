@@ -69,7 +69,7 @@ const request = config => {
     method,
     body: config.data,
     headers: Object.keys(headers).reduce(
-      (preHeaders, key) => ((preHeaders.key = headers[key]), preHeaders),
+      (preHeaders, key) => ((preHeaders[key] = headers[key]), preHeaders),
       defaults.headers
     ),
   };

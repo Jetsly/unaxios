@@ -1,4 +1,4 @@
-/* unaxios version 0.1.4 */
+/* unaxios version 0.1.5 */
 import 'unfetch/polyfill';
 
 var isJson = function (contentType) { return contentType && contentType.indexOf('application/json') > -1; };
@@ -47,7 +47,7 @@ var request = function (config) {
     var init = {
         method: method,
         body: config.data,
-        headers: Object.keys(headers).reduce(function (preHeaders, key) { return ((preHeaders.key = headers[key]), preHeaders); }, defaults.headers),
+        headers: Object.keys(headers).reduce(function (preHeaders, key) { return ((preHeaders[key] = headers[key]), preHeaders); }, defaults.headers),
     };
     if (config.withCredentials) {
         init.credentials = 'include';
